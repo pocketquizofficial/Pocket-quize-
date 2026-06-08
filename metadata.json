@@ -1,0 +1,6 @@
+{
+  "name": "Pocket Quiz",
+  "description": "Modern gaming and fintech quiz app with 1v1 battles, tournaments, single-player math challenges, and robust cash-coin wallet withdraw operations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
