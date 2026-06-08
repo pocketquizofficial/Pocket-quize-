@@ -48,27 +48,35 @@ import kotlin.random.Random
 
 @Composable
 fun QuizAppMainScreen(viewModel: QuizViewModel) {
-    val currentUserState by viewModel.currentUser.collectAsStateWithLifecycle(initialValue = null)
-    val isLoggedIn = viewModel.isLoggedIn
-
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+    androidx.compose.material3.Surface(
+        modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+        color = androidx.compose.ui.graphics.Color(0xFFF5F3FF)
     ) {
-        if (!isLoggedIn || currentUserState == null) {
-            AuthScreen(viewModel)
-        } else {
-            val user = currentUserState!!
-            if (user.isBanned) {
-                BannedScreen(user, viewModel)
-            } else if (viewModel.battleState != "Idle") {
-                BattleArenaScreen(user, viewModel)
-            } else if (viewModel.tournamentPlayState != "Idle") {
-                TournamentArenaScreen(user, viewModel)
-            } else {
-                ScaffoldWithBottomNavigation(user, viewModel)
+        androidx.compose.ui.viewinterop.AndroidView(
+            modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+            factory = { context ->
+                android.webkit.WebView(context).apply {
+                    layoutParams = android.view.ViewGroup.LayoutParams(
+                        android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                        android.view.ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                    settings.apply {
+                        javaScriptEnabled = true
+                        domStorageEnabled = true
+                        allowFileAccess = true
+                        allowContentAccess = true
+                        databaseEnabled = true
+                        mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                        useWideViewPort = true
+                        loadWithOverviewMode = true
+                        mediaPlaybackRequiresUserGesture = false
+                    }
+                    webViewClient = android.webkit.WebViewClient()
+                    webChromeClient = android.webkit.WebChromeClient()
+                    loadUrl("file:///android_asset/Web/index.html")
+                }
             }
-        }
+        )
     }
 }
 

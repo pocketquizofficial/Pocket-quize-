@@ -1,0 +1,62 @@
+/* PocketQuiz Custom Base CSS overrides */
+
+:root {
+  --quiz-primary: #7C3AED;
+  --quiz-secondary: #A855F7;
+  --quiz-bg: #F5F3FF;
+  --quiz-text: #1E1B4B;
+  --quiz-dark: #5B21B6;
+}
+
+/* Animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 15px 5px rgba(124, 58, 237, 0.2);
+  }
+}
+
+.pulse-glow {
+  animation: pulseGlow 2s infinite;
+}
+
+.preset-btn.active {
+  background-color: #FDF4FF !important;
+  border-color: var(--quiz-primary) !important;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
+}
+
+/* Smooth content sliding */
+.tab-view-slide-in {
+  animation: slideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 3D button custom clicks */
+.active-3d:active {
+  transform: translateY(2px);
+  box-shadow: none !important;
+}
+
+/* Custom rounded card styling */
+.rounded-card {
+  border-radius: 20px !important;
+}
+
+/* Scroll physics */
+main, .overflow-y-auto {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}

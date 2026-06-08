@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PocketQuiz - Play & Earn</title>
+  
+  <!-- PWA Settings -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#7C3AED">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            quiz: {
+              bg: '#F5F3FF',
+              text: '#1E1B4B',
+              primary: '#7C3AED',
+              secondary: '#A855F7',
+              dark: '#5B21B6',
+              accent: '#FDF4FF'
+            }
+          },
+          borderRadius: {
+            'card': '20px'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts and Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-mono-retro {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Hide scrollbars but allow scrolling */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-quiz-bg text-quiz-text flex justify-center items-stretch min-h-screen">
+
+  <!-- Main Container -->
+  <div class="w-full max-w-md bg-quiz-bg shadow-xl flex flex-col justify-between overflow-hidden relative border-x border-purple-100/30">
+    
+    <!-- HEADER BAR -->
+    <header class="flex items-center justify-between p-4 bg-white/70 backdrop-blur-md border-b border-purple-100 sticky top-0 z-40">
+      <div class="flex items-center gap-3">
+        <!-- Interactive Profile Trigger -->
+        <button id="profileBtn" class="focus:outline-none focus:scale-95 transition-transform duration-150">
+          <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-quiz-primary to-quiz-secondary p-0.5 shadow-lg shadow-purple-500/10">
+            <div id="avatarText" class="w-full h-full rounded-full border-2 border-white flex items-center justify-center text-white font-extrabold text-sm bg-gradient-to-tr from-quiz-primary to-quiz-secondary">
+              AR
+            </div>
+          </div>
+        </button>
+        <div class="flex flex-col text-left">
+          <span id="userIdBadge" class="text-[10px] font-bold text-quiz-primary uppercase tracking-wider">ID: PKT-8821</span>
+          <span id="userNameText" class="text-sm font-black leading-tight">Alex Rivers</span>
+        </div>
+      </div>
+      
+      <!-- Wallet Coin Banner -->
+      <div class="bg-white rounded-full pl-3 pr-1 py-1 flex items-center gap-2 border border-purple-200 shadow-sm">
+        <div class="flex items-center gap-1">
+          <span class="text-base">🪙</span>
+          <span id="coinBalanceText" class="text-sm font-black text-slate-800 tracking-tight">2,450</span>
+        </div>
+        <button id="headerWalletBtn" class="h-8 px-4 rounded-full bg-quiz-primary text-white text-xs font-extrabold shadow-[0_2px_0_0_#5B21B6] active:shadow-none active:translate-y-0.5 transition-all">
+          WALLET
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT PORT (Scrollable area) -->
+    <main class="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar pb-24">
+      
+      <!-- DYNAMIC MARKETING ROTATOR / BANNER SLIDER -->
+      <section id="bannerSection" class="relative overflow-hidden rounded-card h-[130px] shadow-lg shadow-purple-500/10 border border-purple-100/50">
+        <!-- Slide 1: Tournaments -->
+        <div id="slide0" class="absolute inset-0 bg-gradient-to-tr from-[#7C3AED] to-[#A855F7] p-4 text-white flex flex-col justify-between transition-opacity duration-500 z-10 opacity-100">
+          <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-2xl"></div>
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="bg-white/20 text-white text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded">HOT EVENT</span>
+              <h3 class="text-lg font-black mt-1 leading-tight uppercase">Mega Tournament</h3>
+              <p class="text-xs text-purple-100 font-medium">Prize Pool: 10,000 Coins • Ends Tonight</p>
+            </div>
+            <div class="w-11 h-11 bg-white/20 rounded-xl flex items-center justify-center text-xl shadow-inner">🏆</div>
+          </div>
+          <div>
+            <button onclick="switchTab('contests')" class="bg-white text-quiz-primary px-4 py-1.5 rounded-xl text-[10px] font-black shadow-[0_3px_0_0_#E9D5FF] active:shadow-none active:translate-y-0.5 transition-all">JOIN NOW</button>
+          </div>
+        </div>
+        
+        <!-- Slide 2: 1v1 Battle -->
+        <div id="slide1" class="absolute inset-0 bg-gradient-to-tr from-[#EA580C] to-[#F97316] p-4 text-white flex flex-col justify-between transition-opacity duration-500 z-0 opacity-0">
+          <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-2xl"></div>
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="bg-white/20 text-white text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded">DYNAMIC MULTIPLAYER</span>
+              <h3 class="text-lg font-black mt-1 leading-tight uppercase">1 VS 1 Battles</h3>
+              <p class="text-xs text-orange-100 font-medium">Double your entry coins dynamically in seconds!</p>
+            </div>
+            <div class="w-11 h-11 bg-white/20 rounded-xl flex items-center justify-center text-xl shadow-inner">⚔️</div>
+          </div>
+          <div>
+            <button onclick="startMatching()" class="bg-white text-orange-600 px-4 py-1.5 rounded-xl text-[10px] font-black shadow-[0_3px_0_0_#FFEDD5] active:shadow-none active:translate-y-0.5 transition-all">FIND MATCH</button>
+          </div>
+        </div>
+
+        <!-- Slide 3: UPI Withdrawal -->
+        <div id="slide2" class="absolute inset-0 bg-gradient-to-tr from-[#059669] to-[#10B981] p-4 text-white flex flex-col justify-between transition-opacity duration-500 z-0 opacity-0">
+          <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-2xl"></div>
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="bg-white/20 text-white text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded">SECURE FINTECH</span>
+              <h3 class="text-lg font-black mt-1 leading-tight uppercase">Instant UPI Wallet</h3>
+              <p class="text-xs text-emerald-100 font-medium">Min withdrawal check only ₹50 • 1k Coins = ₹50</p>
+            </div>
+            <div class="w-11 h-11 bg-white/20 rounded-xl flex items-center justify-center text-xl shadow-inner">💳</div>
+          </div>
+          <div>
+            <button onclick="switchTab('wallet')" class="bg-white text-emerald-600 px-4 py-1.5 rounded-xl text-[10px] font-black shadow-[0_3px_0_0_#D1FAE5] active:shadow-none active:translate-y-0.5 transition-all">WITHDRAW SECURELY</button>
+          </div>
+        </div>
+
+        <!-- Slider Dots indicator -->
+        <div class="absolute bottom-2 right-4 z-20 flex gap-1 items-center">
+          <span class="slider-dot w-1.5 h-1.5 rounded-full bg-white transition-opacity border border-white" data-index="0"></span>
+          <span class="slider-dot w-1.5 h-1.5 rounded-full bg-white/50 transition-opacity border border-white/50" data-index="1"></span>
+          <span class="slider-dot w-1.5 h-1.5 rounded-full bg-white/50 transition-opacity border border-white/50" data-index="2"></span>
+        </div>
+      </section>
+
+      <!-- DAILY CHECK-IN STREAK CHIP-BOARD -->
+      <section class="bg-white p-3 rounded-card border border-purple-100 shadow-sm relative">
+        <div class="flex justify-between items-center mb-2 px-1">
+          <span class="text-xs font-extrabold uppercase tracking-tight text-slate-500">Daily Check-in Streak</span>
+          <span id="streakTagText" class="text-[10px] font-extrabold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full">DAY 3 • NOW READY! 🎁</span>
+        </div>
+        
+        <!-- Checklist streak container -->
+        <div class="grid grid-cols-7 gap-1.5">
+          <!-- Day 1 -->
+          <div class="flex flex-col items-center gap-1 bg-purple-50/50 p-2 rounded-xl border border-purple-100 opacity-60">
+            <span class="text-[9px] font-bold text-slate-400">D1</span>
+            <span class="text-sm">✅</span>
+          </div>
+          <!-- Day 2 -->
+          <div class="flex flex-col items-center gap-1 bg-purple-50/50 p-2 rounded-xl border border-purple-100 opacity-60">
+            <span class="text-[9px] font-bold text-slate-400">D2</span>
+            <span class="text-sm">✅</span>
+          </div>
+          <!-- Day 3 (Active) -->
+          <button id="streakClaimBtn" onclick="claimStreakReward()" class="flex flex-col items-center gap-1 bg-gradient-to-tr from-quiz-primary to-quiz-secondary p-2 rounded-xl border border-purple-300 ring-2 ring-purple-200 shadow-lg shadow-purple-500/10 cursor-pointer hover:scale-105 active:scale-95 transition-transform">
+            <span class="text-[9px] font-extrabold text-white">D3</span>
+            <span id="dayGiftIcon" class="text-sm animate-bounce">🎁</span>
+          </button>
+          <!-- Day 4 -->
+          <div class="flex flex-col items-center gap-1 bg-slate-50 p-2 rounded-xl border border-slate-100 text-slate-400">
+            <span class="text-[9px] font-extrabold">D4</span>
+            <span class="text-[10px] font-extrabold">+20</span>
+          </div>
+          <!-- Day 5 -->
+          <div class="flex flex-col items-center gap-1 bg-slate-50 p-2 rounded-xl border border-slate-100 text-slate-400">
+            <span class="text-[9px] font-extrabold">D5</span>
+            <span class="text-[10px] font-extrabold">+25</span>
+          </div>
+          <!-- Day 6 -->
+          <div class="flex flex-col items-center gap-1 bg-slate-50 p-2 rounded-xl border border-slate-100 text-slate-400">
+            <span class="text-[9px] font-extrabold">D6</span>
+            <span class="text-[10px] font-extrabold">+30</span>
+          </div>
+          <!-- Day 7 -->
+          <div class="flex flex-col items-center gap-1 bg-slate-50 p-2 rounded-xl border border-slate-100 text-slate-400">
+            <span class="text-[9px] font-extrabold">D7</span>
+            <span class="text-[10px] font-extrabold">⭐</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXCITING BENTO GRID OF ARENA MODES -->
+      <section class="grid grid-cols-2 gap-4">
+        
+        <!-- CARD 1: 1 VS 1 BATTLE (Full 2-column span) -->
+        <article class="col-span-2 bg-white rounded-card p-4 flex flex-col md:flex-row items-stretch justify-between border border-purple-100 shadow-sm relative overflow-hidden group">
+          <div class="z-10 flex-1 flex flex-col justify-between items-start">
+            <div>
+              <div class="bg-purple-100/60 rounded-lg inline-block px-2.5 py-0.5 mb-2 border border-purple-200">
+                <span class="text-[9px] font-black text-quiz-primary uppercase tracking-widest">LIVE MULTIPLAYER</span>
+              </div>
+              <h4 class="text-xl font-bold leading-tight text-slate-800">1 VS 1 <span class="text-quiz-primary">BATTLE</span></h4>
+              <p class="text-[11px] font-semibold text-purple-700/80 mt-1">Entry: 20 🪙 • Prize: 40 🪙</p>
+              <p class="text-[11px] text-slate-500 mt-1 max-w-[200px]">Answer fast equations before your opponent to win.</p>
+            </div>
+            <button onclick="startMatching()" class="mt-4 bg-quiz-primary text-white px-5 py-2 rounded-xl text-xs font-black shadow-[0_4px_0_0_#5B21B6] active:shadow-none active:translate-y-1 transition-all">
+              PLAY NOW
+            </button>
+          </div>
+          
+          <!-- Large Decorative Circular Emblem with Swords -->
+          <div class="absolute right-3 top-3 bottom-3 w-28 bg-gradient-to-tr from-purple-50 to-white border border-purple-100/50 rounded-full flex items-center justify-center shadow-inner self-center transform group-hover:rotate-12 transition-transform duration-300">
+            <span class="text-4xl">⚔️</span>
+          </div>
+        </article>
+
+        <!-- CARD 2: MATH SOLUTION QUIZ (Single Mode) -->
+        <article class="bg-white rounded-card p-4 border border-purple-100 shadow-sm flex flex-col justify-between h-[180px] hover:translate-y-[-2px] transition-transform duration-200 cursor-pointer" onclick="openMathQuizSolo()">
+          <div>
+            <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center text-2xl mb-3 shadow-sm">
+              🧮
+            </div>
+            <h4 class="text-sm font-black text-slate-800">MATH QUIZ</h4>
+            <p class="text-[10px] text-slate-500 leading-tight mt-1">Perfect daily solver skills. Earn up to 200 🪙 daily.</p>
+          </div>
+          <div class="flex justify-between items-center pt-2">
+            <span class="text-[10px] font-black text-quiz-primary uppercase">SOLO RUN</span>
+            <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-600">
+              →
+            </div>
+          </div>
+        </article>
+
+        <!-- CARD 3: TOURNAMENTS CONTESTS -->
+        <article class="bg-white rounded-card p-4 border border-purple-100 shadow-sm flex flex-col justify-between h-[180px] hover:translate-y-[-2px] transition-transform duration-200 cursor-pointer" onclick="switchTab('contests')">
+          <div>
+            <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-2xl mb-3 shadow-sm">
+              🏆
+            </div>
+            <h4 class="text-sm font-black text-slate-800">CONTESTS</h4>
+            <p class="text-[10px] text-slate-500 leading-tight mt-1">Massive events with 50-100 active quiz players.</p>
+          </div>
+          <div class="flex justify-between items-center pt-2">
+            <span class="text-[10px] font-black text-quiz-primary uppercase">TOURNAMENT</span>
+            <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-600">
+              →
+            </div>
+          </div>
+        </article>
+
+        <!-- CARD 4: LEADERBOARD BOARD -->
+        <article class="bg-white rounded-card p-4 border border-purple-100 shadow-sm flex flex-col justify-between h-[180px] hover:translate-y-[-2px] transition-transform duration-200 cursor-pointer" onclick="switchTab('leaderboard')">
+          <div>
+            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-2xl mb-3 shadow-sm">
+              🏅
+            </div>
+            <h4 class="text-sm font-black text-slate-800">LEADERBOARD</h4>
+            <p class="text-[10px] text-slate-500 leading-tight mt-1">Study world ranks, stats, and top coin earners.</p>
+          </div>
+          <div class="flex justify-between items-center pt-2">
+            <span class="text-[10px] font-black text-quiz-primary uppercase">VIEW RANKS</span>
+            <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-600">
+              →
+            </div>
+          </div>
+        </article>
+
+        <!-- CARD 5: UPI CASH WALLET -->
+        <article class="bg-white rounded-card p-4 border border-purple-100 shadow-sm flex flex-col justify-between h-[180px] hover:translate-y-[-2px] transition-transform duration-200 cursor-pointer" onclick="switchTab('wallet')">
+          <div>
+            <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-2xl mb-3 shadow-sm">
+              💳
+            </div>
+            <h4 class="text-sm font-black text-slate-800">UPI WALLET</h4>
+            <p class="text-[10px] text-slate-500 leading-tight mt-1">Instantly redeem coins to safe bank cash UPI.</p>
+          </div>
+          <div class="flex justify-between items-center pt-2">
+            <span class="text-[10px] font-black text-quiz-primary uppercase">WITHDRAW</span>
+            <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-600">
+              →
+            </div>
+          </div>
+        </article>
+
+      </section>
+
+    </main>
+
+    <!-- FLOATING TAB VIEWS -->
+    
+    <!-- TAB: WALLET -->
+    <div id="tabWallet" class="hidden absolute inset-0 bg-quiz-bg z-30 flex flex-col overflow-hidden">
+      <!-- Nav header -->
+      <header class="flex items-center justify-between p-4 bg-white border-b border-purple-100">
+        <div class="flex items-center gap-2">
+          <button onclick="closeCurrentTab()" class="text-quiz-primary font-bold flex items-center gap-1">
+            <span class="material-symbols-outlined">arrow_back</span> Back
+          </button>
+        </div>
+        <span class="text-base font-black">UPI REDEEM WALLET</span>
+        <span class="opacity-0">Back</span>
+      </header>
+      
+      <!-- Wallet scroll area -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
+        <!-- Coin card wallet balance overview -->
+        <div class="bg-gradient-to-tr from-quiz-primary to-quiz-secondary p-5 rounded-card text-white relative overflow-hidden shadow-lg shadow-purple-500/20">
+          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/20 rounded-full blur-xl"></div>
+          <div>
+            <span class="text-[10px] font-black tracking-widest opacity-80 uppercase">CURRENT REWARD BALANCE</span>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="text-3xl">🪙</span>
+              <span id="walletCoinsText" class="text-4xl font-black">2,450</span>
+            </div>
+            <div class="mt-2 text-xs font-semibold text-purple-100">
+              Equivalent Value: <span id="equivalentRsText" class="text-white font-bold">₹122.50</span>
+            </div>
+          </div>
+          
+          <div class="mt-6 flex justify-between items-center text-[11px] bg-white/10 p-2.5 rounded-xl border border-white/10">
+            <span>Minimum Withdraw Limit: ₹50</span>
+            <span>Rate: 1,000 Coins = ₹50</span>
+          </div>
+        </div>
+
+        <!-- Withdraw request form -->
+        <div class="bg-white border border-purple-100 p-4 rounded-card shadow-sm space-y-4">
+          <h4 class="text-sm font-black text-slate-800">WITHDRAW TO REAL BANK CASH</h4>
+          
+          <!-- UPI Input -->
+          <div class="space-y-1">
+            <label class="text-[11px] font-extrabold text-slate-500">PAYEE UPI ID (e.g., alex@ybl, success@paytm)</label>
+            <input id="upiIdInput" type="text" placeholder="Enter valid UPI ID" class="w-full border border-purple-100 focus:border-quiz-primary focus:ring-2 focus:ring-purple-200 outline-none p-3 rounded-xl text-sm font-semibold text-slate-700 bg-purple-50/20">
+          </div>
+
+          <!-- Quick Preset Selectors -->
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-extrabold text-slate-500">SELECT CONVERSION PACK</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="selectWalletPreset(this, 1000, 50)" class="preset-btn border-2 border-purple-100 hover:border-quiz-primary p-3 rounded-xl flex items-center justify-between text-left transition-all">
+                <div>
+                  <div class="text-xs font-black text-slate-800">1,000 Coins</div>
+                  <div class="text-[10px] text-slate-500 mt-0.5">Submits conversion</div>
+                </div>
+                <div class="text-sm font-black text-quiz-primary">₹50</div>
+              </button>
+              <button onclick="selectWalletPreset(this, 2000, 100)" class="preset-btn border-2 border-purple-100 hover:border-quiz-primary p-3 rounded-xl flex items-center justify-between text-left transition-all">
+                <div>
+                  <div class="text-xs font-black text-slate-800">2,000 Coins</div>
+                  <div class="text-[10px] text-slate-500 mt-0.5">Submits conversion</div>
+                </div>
+                <div class="text-sm font-black text-quiz-primary">₹100</div>
+              </button>
+              <button onclick="selectWalletPreset(this, 4000, 200)" class="preset-btn border-2 border-purple-100 hover:border-quiz-primary p-3 rounded-xl flex items-center justify-between text-left transition-all col-span-2">
+                <div>
+                  <div class="text-xs font-black text-slate-800">4,000 Coins</div>
+                  <div class="text-[10px] text-slate-500 mt-0.5">Best savings conversion pack</div>
+                </div>
+                <div class="text-sm font-black text-quiz-primary">₹200</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button id="submitWithdrawBtn" onclick="submitWithdrawal()" class="w-full py-3.5 bg-quiz-primary text-white rounded-xl text-xs font-black shadow-[0_4px_0_0_#5B21B6] active:shadow-none active:translate-y-1 transition-all">
+            INITIATE UPI SECURE WITHDRAW
+          </button>
+        </div>
+
+        <!-- Transactions history -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center px-1">
+            <span class="text-xs font-extrabold text-slate-500 uppercase">TRANSACTION LOGS / WITHDRAW HISTORY</span>
+            <span class="text-[10px] font-bold text-slate-400">Showing recent 3</span>
+          </div>
+          <div id="txLogsContainer" class="space-y-2">
+            <!-- Populated via script -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- TAB: CONTESTS -->
+    <div id="tabContests" class="hidden absolute inset-0 bg-quiz-bg z-30 flex flex-col overflow-hidden">
+      <header class="flex items-center justify-between p-4 bg-white border-b border-purple-100">
+        <button onclick="closeCurrentTab()" class="text-quiz-primary font-bold flex items-center gap-1">
+          <span class="material-symbols-outlined">arrow_back</span> Back
+        </button>
+        <span class="text-base font-black">TOURNAMENTS HUB</span>
+        <span class="opacity-0">Back</span>
+      </header>
+      
+      <div class="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
+        <!-- Banner intro -->
+        <div class="bg-gradient-to-tr from-amber-400 to-amber-500 rounded-card p-4 text-white relative shadow-md">
+          <div class="text-2xl mb-1">🏁</div>
+          <h4 class="text-lg font-black uppercase leading-tight">Live Scheduled Contests</h4>
+          <p class="text-xs text-amber-500 bg-white inline-block px-1.5 py-0.5 rounded font-extrabold mt-1">50-100 PLAYERS</p>
+          <p class="text-[11px] text-amber-50 mt-1">Top 5 finishers on correctness rate + seconds speed divide the pool.</p>
+        </div>
+
+        <!-- List of active contests -->
+        <div class="space-y-3">
+          <!-- Contest 1 -->
+          <div class="bg-white border border-purple-100 round-card p-4 rounded-card shadow-sm flex items-center justify-between gap-3">
+            <div class="flex-1">
+              <span class="bg-red-50 text-red-600 border border-red-100 text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-wider">ACTIVE IN 15 MINS</span>
+              <h5 class="text-sm font-black text-slate-800 mt-1">Mega Math Einstein Contests</h5>
+              <p class="text-xs text-slate-500 mt-0.5">Entry Fee: 100 Coins • 15 questions</p>
+              <p class="text-xs font-bold text-quiz-primary mt-1">Prize Target: 10,000 Coins Pool</p>
+            </div>
+            <button onclick="joinContest('Mega Math Einstein', 100, 10000)" class="bg-quiz-primary text-white text-xs font-black px-4 py-2 rounded-xl shadow-[0_3px_0_0_#5B21B6] active:translate-y-0.5 active:shadow-none transition-all">JOIN</button>
+          </div>
+
+          <!-- Contest 2 -->
+          <div class="bg-white border border-purple-100 round-card p-4 rounded-card shadow-sm flex items-center justify-between gap-3">
+            <div class="flex-1">
+              <span class="bg-blue-50 text-blue-600 border border-blue-100 text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-wider">ACTIVE IN 2 HOURS</span>
+              <h5 class="text-sm font-black text-slate-800 mt-1">Geometry Blitz Quick challenge</h5>
+              <p class="text-xs text-slate-500 mt-0.5">Entry Fee: 50 Coins • 10 questions</p>
+              <p class="text-xs font-bold text-quiz-primary mt-1">Prize Target: 4,000 Coins Pool</p>
+            </div>
+            <button onclick="joinContest('Geometry Blitz', 50, 4000)" class="bg-quiz-primary text-white text-xs font-black px-4 py-2 rounded-xl shadow-[0_3px_0_0_#5B21B6] active:translate-y-0.5 active:shadow-none transition-all">JOIN</button>
+          </div>
+
+          <!-- Contest 3 -->
+          <div class="bg-white border border-purple-100 round-card p-4 rounded-card shadow-sm flex items-center justify-between gap-3 opacity-60">
+            <div class="flex-1">
+              <span class="bg-slate-50 text-slate-600 border border-slate-100 text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-wider">ENDED RECENTLY</span>
+              <h5 class="text-sm font-black text-slate-800 mt-1">Fractions & Algebra Supremacy</h5>
+              <p class="text-xs text-slate-500 mt-0.5">Entry Fee: 30 Coins • 10 questions</p>
+              <p class="text-xs font-bold text-emerald-600 mt-1">Won by: Sara_0x (Rank #1, 2.5k Coins)</p>
+            </div>
+            <span class="bg-slate-100 text-slate-500 text-xs font-bold px-3 py-1.5 rounded-lg">FINISHED</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- TAB: LEADERBOARD -->
+    <div id="tabLeaderboard" class="hidden absolute inset-0 bg-quiz-bg z-30 flex flex-col overflow-hidden">
+      <header class="flex items-center justify-between p-4 bg-white border-b border-purple-100">
+        <button onclick="closeCurrentTab()" class="text-quiz-primary font-bold flex items-center gap-1">
+          <span class="material-symbols-outlined">arrow_back</span> Back
+        </button>
+        <span class="text-base font-black">LEADERBOARD RANKS</span>
+        <span class="opacity-0">Back</span>
+      </header>
+      
+      <div class="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
+        <!-- Top 3 Podium Area -->
+        <div class="grid grid-cols-3 gap-3 pt-6 pb-2 items-end">
+          
+          <!-- Rank 2 -->
+          <div class="bg-white border border-purple-100 p-2 rounded-2xl flex flex-col items-center relative text-center">
+            <span class="absolute -top-4 w-7 h-7 bg-slate-200 border-2 border-white rounded-full flex items-center justify-center font-black text-xs">2</span>
+            <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-xl shadow mb-1">👩</div>
+            <span class="text-xs font-black truncate max-w-full">Sara_0x</span>
+            <span class="text-[10px] text-quiz-primary font-bold mt-1">4,950 🪙</span>
+          </div>
+
+          <!-- Rank 1 (Tallest) -->
+          <div class="bg-pink-50 border-2 border-purple-200 p-3 rounded-2xl flex flex-col items-center relative text-center scale-105 shadow-md shadow-purple-500/5">
+            <span class="absolute -top-5 w-8 h-8 bg-amber-400 border-2 border-white rounded-full flex items-center justify-center text-white font-black text-sm animate-bounce">👑</span>
+            <div class="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center text-2xl shadow mb-1 border-2 border-amber-300">🤴</div>
+            <span class="text-sm font-black truncate max-w-full">Rajat_Math</span>
+            <span class="text-xs font-black text-quiz-primary mt-1">8,100 🪙</span>
+          </div>
+
+          <!-- Rank 3 -->
+          <div class="bg-white border border-purple-100 p-2 rounded-2xl flex flex-col items-center relative text-center">
+            <span class="absolute -top-4 w-7 h-7 bg-amber-600 text-white border-2 border-white rounded-full flex items-center justify-center font-black text-xs">3</span>
+            <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-xl shadow mb-1">🦁</div>
+            <span class="text-xs font-black truncate max-w-full">LionStar</span>
+            <span class="text-[10px] text-quiz-primary font-bold mt-1">3,400 🪙</span>
+          </div>
+
+        </div>
+
+        <!-- Leader list rows -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center px-1">
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">TOP CONTENDERS LIST</span>
+            <span class="text-[10px] font-extrabold text-slate-400">UPDATED MOMENTARILY</span>
+          </div>
+          
+          <div class="space-y-2">
+            <!-- Row 4 -->
+            <div class="bg-white border border-purple-100 p-3 rounded-xl flex items-center justify-between gap-3 shadow-sm">
+              <div class="flex items-center gap-3">
+                <span class="font-black text-slate-400 min-w-[14px]">#4</span>
+                <div class="w-8 h-8 bg-purple-50 rounded-full flex items-center justify-center text-sm">🦊</div>
+                <span class="font-bold text-xs text-slate-700">FoxSolver</span>
+              </div>
+              <span class="font-mono-retro font-semibold text-xs text-quiz-primary">2,950 Coins</span>
+            </div>
+            
+            <!-- Row 5 (Current User!) -->
+            <div class="bg-purple-50 border-2 border-purple-200 p-3 rounded-xl flex items-center justify-between gap-3 shadow-sm ring-2 ring-purple-100">
+              <div class="flex items-center gap-3">
+                <span class="font-black text-quiz-primary min-w-[14px]">#5</span>
+                <div class="w-8 h-8 bg-quiz-primary text-white rounded-full flex items-center justify-center text-xs font-extrabold">JD</div>
+                <div class="flex flex-col">
+                  <span id="lbCurrentUserName" class="font-black text-xs text-slate-800">Alex Rivers</span>
+                  <span class="text-[9px] font-extrabold text-[#7C3AED]">YOUS (CURRENT PLAYERS)</span>
+                </div>
+              </div>
+              <span id="lbCurrentUserCoins" class="font-mono-retro font-black text-xs text-quiz-primary">2,450 Coins</span>
+            </div>
+
+            <!-- Row 6 -->
+            <div class="bg-white border border-purple-100 p-3 rounded-xl flex items-center justify-between gap-3 shadow-sm">
+              <div class="flex items-center gap-3">
+                <span class="font-black text-slate-400 min-w-[14px]">#6</span>
+                <div class="w-8 h-8 bg-purple-50 rounded-full flex items-center justify-center text-sm">🐼</div>
+                <span class="font-bold text-xs text-slate-700">PandaMath</span>
+              </div>
+              <span class="font-mono-retro font-semibold text-xs text-quiz-primary">1,980 Coins</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- SUB-VIEW: 1v1 MATCHMAKING PANEL -->
+    <div id="view1v1Matchmaking" class="hidden absolute inset-0 bg-quiz-bg/95 z-40 flex flex-col items-center justify-center p-6 text-center backdrop-blur-md">
+      <div class="space-y-6 w-full max-w-sm">
+        
+        <!-- Spinning Radar pulsing scanning circle -->
+        <div class="relative w-44 h-44 mx-auto flex items-center justify-center">
+          <div class="absolute inset-0 bg-quiz-primary/10 rounded-full animate-ping"></div>
+          <div class="absolute inset-4 bg-quiz-primary/20 rounded-full animate-pulse"></div>
+          <div class="absolute inset-10 bg-white border border-purple-200 rounded-full flex items-center justify-center shadow-lg">
+            <span id="radarIconText" class="text-4xl animate-bounce">⚔️</span>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <h3 id="matchmakingStateTitle" class="text-2xl font-black tracking-tight text-slate-800 uppercase">Searching Match</h3>
+          <p id="matchmakingStateDesc" class="text-sm text-slate-500 font-medium">Connecting to live matching coordinator...</p>
+        </div>
+
+        <!-- Matching player identities -->
+        <div class="flex items-center justify-center gap-6 bg-white p-4 rounded-card border border-purple-100 shadow-sm w-full">
+          <!-- Left: User -->
+          <div class="flex flex-col items-center gap-1.5 flex-1">
+            <div class="w-12 h-12 rounded-full bg-quiz-primary text-white flex items-center justify-center font-extrabold text-sm">AR</div>
+            <span class="font-black text-[11px] text-slate-800 truncate block max-w-[80px]">Alex Rivers</span>
+            <span class="text-[9px] font-bold text-quiz-primary">2,450 🪙</span>
+          </div>
+
+          <div class="text-lg font-black text-slate-400">VS</div>
+
+          <!-- Right: Opponent (Pending) -->
+          <div id="opponentSearchCard" class="flex flex-col items-center gap-1.5 flex-1">
+            <div class="w-12 h-12 rounded-full bg-slate-100 border-2 border-dashed border-purple-300 flex items-center justify-center text-lg animate-spin">⏳</div>
+            <span class="font-bold text-[11px] text-slate-400 animate-pulse">Searching...</span>
+            <span class="text-[9px] font-bold text-slate-400">Connecting</span>
+          </div>
+        </div>
+
+        <!-- Cancel Match button -->
+        <button onclick="cancelMatchmaking()" class="py-3 px-6 bg-slate-100 text-slate-600 rounded-xl text-xs font-black shadow-[0_3px_0_0_#CBD5E1] active:shadow-none active:translate-y-0.5 transition-all">
+          CANCEL SEARCH
+        </button>
+      </div>
+    </div>
+
+    <!-- SUB-VIEW: 1v1 ACTIVE BATTLE ARENA PLAYBOARD -->
+    <div id="view1v1GamePlayboard" class="hidden absolute inset-0 bg-quiz-bg z-40 flex flex-col justify-between overflow-hidden">
+      <!-- Top indicators -->
+      <header class="p-4 bg-white border-b border-purple-100 flex items-center justify-between">
+        <!-- Self -->
+        <div class="flex items-center gap-2 flex-1">
+          <div class="w-9 h-9 rounded-full bg-quiz-primary text-white flex items-center justify-center font-extrabold text-xs">AR</div>
+          <div class="flex flex-col items-start leading-none">
+            <span class="text-[10px] font-bold text-slate-400">YOU</span>
+            <span id="playerGameScoreText" class="text-sm font-black text-rose-600">0 PTS</span>
+          </div>
+        </div>
+
+        <!-- Middle Clock timer indicator -->
+        <div class="flex flex-col items-center justify-center bg-purple-50 px-4 py-2 border border-purple-200 rounded-2xl min-w-[70px]">
+          <span class="text-[9px] font-extrabold text-quiz-primary uppercase">TIMER CAPS</span>
+          <span id="gameTimerValue" class="text-lg font-black font-mono-retro text-quiz-primary">15s</span>
+        </div>
+
+        <!-- Opponent -->
+        <div class="flex items-center gap-2 flex-1 justify-end">
+          <div class="flex flex-col items-end leading-none">
+            <span id="oppGameNameSub" class="text-[10px] font-bold text-slate-400">SARAH</span>
+            <span id="oppGameScoreText" class="text-sm font-black text-rose-600">0 PTS</span>
+          </div>
+          <div id="oppGameAvatar" class="w-9 h-9 rounded-full bg-amber-400 flex items-center justify-center text-sm shadow">👩</div>
+        </div>
+      </header>
+
+      <!-- Active Arena Equation screen display -->
+      <div id="quizArenaScreen" class="flex-1 p-6 flex flex-col justify-center items-stretch space-y-6">
+        
+        <!-- Round number banner -->
+        <div class="text-center">
+          <span id="arenaRoundTag" class="bg-quiz-accent text-quiz-primary font-black px-3 py-1 rounded-full text-[10px] border border-purple-100 uppercase tracking-widest">ROUND 1 OF 5</span>
+        </div>
+
+        <!-- Question display card -->
+        <div class="bg-white border-2 border-purple-105 p-8 rounded-[25px] text-center shadow-md relative overflow-hidden flex flex-col justify-center items-center h-48">
+          <div class="absolute top-0 right-0 p-2 bg-purple-50 text-[10px] font-bold text-quiz-primary/60 border-bl border-purple-100">Math Solver Arena</div>
+          <h2 id="arenaQuestionDisplay" class="text-4xl font-extrabold tracking-tight font-mono-retro text-slate-800">45 + 18 = ?</h2>
+        </div>
+
+        <!-- Options Container -->
+        <div class="grid grid-cols-2 gap-4">
+          <button onclick="submitArenaAnswer(this)" class="option-btn bg-white border border-purple-150 p-4 rounded-2xl text-base font-extrabold text-slate-800 shadow-sm hover:border-quiz-primary active:scale-95 transition-all text-center">45</button>
+          <button onclick="submitArenaAnswer(this)" class="option-btn bg-white border border-purple-150 p-4 rounded-2xl text-base font-extrabold text-slate-800 shadow-sm hover:border-quiz-primary active:scale-95 transition-all text-center">63</button>
+          <button onclick="submitArenaAnswer(this)" class="option-btn bg-white border border-purple-150 p-4 rounded-2xl text-base font-extrabold text-slate-800 shadow-sm hover:border-quiz-primary active:scale-95 transition-all text-center">72</button>
+          <button onclick="submitArenaAnswer(this)" class="option-btn bg-white border border-purple-150 p-4 rounded-2xl text-base font-extrabold text-slate-800 shadow-sm hover:border-quiz-primary active:scale-95 transition-all text-center">50</button>
+        </div>
+        
+        <!-- Live opponent progress prompt ticker -->
+        <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl flex items-center gap-2 justify-center text-[11px] text-slate-500 font-semibold shadow-inner">
+          <span id="tickerStatusIcon" class="animate-bounce">⚡</span>
+          <span id="tickerStatusText">Both solvers are compiling answers...</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SUB-VIEW: MATCH RESULT OUTCOME -->
+    <div id="viewMatchResultWindow" class="hidden absolute inset-0 bg-quiz-bg/95 z-50 flex flex-col items-center justify-center p-6 text-center backdrop-blur-md">
+      <div id="resultContentCard" class="bg-white border-2 border-purple-100 p-6 rounded-[30px] w-full max-w-sm shadow-xl space-y-6">
+        <!-- Result Icon/Lottie style -->
+        <div id="resultWinnerCrown" class="w-24 h-24 bg-amber-50 rounded-full border-2 border-amber-300 flex items-center justify-center text-4xl mx-auto shadow-md">
+          🏆
+        </div>
+
+        <div class="space-y-1">
+          <h3 id="resultTitleText" class="text-2xl font-black tracking-tight text-slate-800 uppercase">YOU TRIUMPHED!</h3>
+          <p id="resultSubtitleText" class="text-xs text-slate-500 font-semibold">Alex Rivers (4 PTS) vs Sarah (2 PTS)</p>
+        </div>
+
+        <!-- Stats reward summary -->
+        <div class="bg-purple-50 p-4 rounded-2xl border border-purple-100 flex items-center justify-around">
+          <div class="text-center">
+            <span class="text-[10px] font-extrabold text-slate-400 block uppercase">REWARD PRIZE</span>
+            <span id="resultRewardBalance" class="text-lg font-black text-emerald-600 block">+40 🪙</span>
+          </div>
+          <div class="w-px h-8 bg-purple-200"></div>
+          <div class="text-center">
+            <span class="text-[10px] font-extrabold text-slate-400 block uppercase">STREAK LOGS</span>
+            <span class="text-lg font-black text-quiz-primary block">+1 WIN</span>
+          </div>
+        </div>
+
+        <!-- Navigation triggers -->
+        <div class="space-y-2">
+          <button onclick="finishAndCloseResult()" class="w-full py-3.5 bg-quiz-primary text-white rounded-xl text-xs font-black shadow-[0_4px_0_0_#5B21B6] active:shadow-none active:translate-y-1 transition-all">
+            RETURN TO LOBBY
+          </button>
+          <button onclick="startMatching()" class="w-full py-3.5 bg-slate-50 border border-purple-100 text-slate-700 rounded-xl text-xs font-black shadow-[0_3px_0_0_#E2E8F0] active:shadow-none active:translate-y-0.5 transition-all">
+            PLAY AGAIN BATTLE
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- SUB-VIEW: PROFILE CUSTOMIZER -->
+    <div id="tabProfile" class="hidden absolute inset-0 bg-quiz-bg z-30 flex flex-col overflow-hidden">
+      <header class="flex items-center justify-between p-4 bg-white border-b border-purple-100">
+        <button onclick="closeCurrentTab()" class="text-quiz-primary font-bold flex items-center gap-1">
+          <span class="material-symbols-outlined">arrow_back</span> Back
+        </button>
+        <span class="text-base font-black">EDIT USER PROFILE</span>
+        <span class="opacity-0">Back</span>
+      </header>
+      
+      <div class="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
+        <!-- Current profile snapshot -->
+        <div class="bg-white border border-purple-100 p-5 rounded-nested rounded-card shadow-sm flex flex-col items-center text-center space-y-3">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-quiz-primary to-quiz-secondary p-1 relative shadow-lg">
+            <div id="profileAvatarBig" class="w-full h-full rounded-full border-2 border-white flex items-center justify-center text-white font-black text-2xl bg-gradient-to-tr from-quiz-primary to-quiz-secondary">
+              AR
+            </div>
+            <span class="absolute bottom-1 right-1 w-6 h-6 bg-amber-400 border-2 border-white rounded-full flex items-center justify-center text-xs shadow">⭐</span>
+          </div>
+          <div>
+            <h4 id="profileNameBig" class="text-lg font-black text-slate-800">Alex Rivers</h4>
+            <span id="profileIdBig" class="text-[10px] font-extrabold text-quiz-primary uppercase tracking-wider bg-purple-50 border border-purple-100 px-2 py-0.5 rounded-full">ID: PKT-8821</span>
+          </div>
+        </div>
+
+        <!-- Customizer settings form -->
+        <div class="bg-white border border-purple-100 p-4 rounded-card shadow-sm space-y-4">
+          <h4 class="text-xs font-black text-slate-500 uppercase tracking-wider">EDIT DETAILS</h4>
+          
+          <div class="space-y-1">
+            <label class="text-[10px] font-extrabold text-slate-400">PLAYER SURNAME / NAME</label>
+            <input id="profileNameInput" type="text" placeholder="Alex Rivers" class="w-full border border-purple-100 outline-none p-3 rounded-xl text-sm font-semibold text-slate-700 bg-purple-50/20 focus:border-quiz-primary focus:ring-2 focus:ring-purple-200">
+          </div>
+
+          <div class="space-y-1">
+            <label class="text-[10px] font-extrabold text-slate-400">WALLET UPI ACCOUNT ID</label>
+            <input id="profileUpiInput" type="text" placeholder="alex@ybl" class="w-full border border-purple-100 outline-none p-3 rounded-xl text-sm font-semibold text-slate-700 bg-purple-50/20 focus:border-quiz-primary focus:ring-2 focus:ring-purple-200">
+          </div>
+
+          <button onclick="saveUserProfile()" class="w-full py-3.5 bg-quiz-primary text-white rounded-xl text-xs font-black shadow-[0_4px_0_0_#5B21B6] active:shadow-none active:translate-y-1 transition-all">
+            UPDATE USER PROFILE DATA
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- REAL-TIME CUSTOM TOASTS ALERTS SYSTEM -->
+    <div id="toastNotificationBox" class="hidden absolute bottom-20 left-4 right-4 bg-slate-900/95 text-white py-3 px-4 rounded-xl shadow-lg border border-slate-700 flex items-center justify-between gap-3 z-50 transform translate-y-10 transition-transform duration-300">
+      <div class="flex items-center gap-2">
+        <span id="toastIconText" class="text-lg">📢</span>
+        <span id="toastMessageText" class="text-xs font-bold leading-tight">Toast alert message</span>
+      </div>
+      <button onclick="dismissToast()" class="text-[10px] text-slate-400 focus:outline-none hover:text-white">CLOSE</button>
+    </div>
+
+
+    <!-- BOTTOM NAVIGATION BAR tabs control -->
+    <nav class="h-16 bg-white border-t border-purple-100 flex items-center justify-around px-2 pb-1 sticky bottom-0 z-40">
+      <!-- Nav Button: Home -->
+      <button onclick="switchTab('home')" id="navBtnHome" class="flex flex-col items-center gap-1 flex-1 py-1 focus:outline-none relative group">
+        <div id="navActiveIndicatorHome" class="w-10 h-1 bg-quiz-primary rounded-full absolute top-[-16px] transition-all"></div>
+        <span class="text-xl">🏠</span>
+        <span class="text-[10px] font-extrabold text-quiz-primary transition-colors">Home</span>
+      </button>
+
+      <!-- Nav Button: Contests -->
+      <button onclick="switchTab('contests')" id="navBtnContests" class="flex flex-col items-center gap-1 flex-1 py-1 focus:outline-none relative group opacity-40">
+        <div id="navActiveIndicatorContests" class="w-10 h-1 bg-quiz-primary rounded-full absolute top-[-16px] hidden transition-all"></div>
+        <span class="text-xl">📊</span>
+        <span class="text-[10px] font-extrabold text-slate-500 transition-colors">Stats</span>
+      </button>
+
+      <!-- Nav Button: Leaderboard -->
+      <button onclick="switchTab('leaderboard')" id="navBtnLeaderboard" class="flex flex-col items-center gap-1 flex-1 py-1 focus:outline-none relative group opacity-40">
+        <div id="navActiveIndicatorLeaderboard" class="w-10 h-1 bg-quiz-primary rounded-full absolute top-[-16px] hidden transition-all"></div>
+        <span class="text-xl">🔔</span>
+        <span class="text-[10px] font-extrabold text-slate-500 transition-colors">Alerts</span>
+      </button>
+
+      <!-- Nav Button: Profile -->
+      <button onclick="switchTab('profile')" id="navBtnProfile" class="flex flex-col items-center gap-1 flex-1 py-1 focus:outline-none relative group opacity-40">
+        <div id="navActiveIndicatorProfile" class="w-10 h-1 bg-quiz-primary rounded-full absolute top-[-16px] hidden transition-all"></div>
+        <span class="text-xl">👤</span>
+        <span class="text-[10px] font-extrabold text-slate-500 transition-colors">Profile</span>
+      </button>
+    </nav>
+    
+  </div>
+
+  <!-- SCRIPT INTEGRATION -->
+  <script src="script.js"></script>
+</body>
+</html>
